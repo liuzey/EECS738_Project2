@@ -35,7 +35,7 @@ def load_data():
             line_t = [word.lower() for word in nltk.word_tokenize(line)]
             line_t = [item for item in line_t if item not in punc]
             data.append(line_t)
-    return np.array(data[:])
+    return np.array(data[:20000])
 
 
 def predict():
