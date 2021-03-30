@@ -23,162 +23,54 @@ If you'd like to use your own data, please put them under ['data'](https://githu
 ```bash
 pip install -r requirements.txt
 ``` 
-* **Scikit-learn is only for examine correctness of methods implemented but does not participate.** Whether to compare is set [here](https://github.com/liuzey/EECS738/blob/b88d30af51394cd80eecf678254439cb6e0f823c/main.py#L76).
+* Note that NLTK package (version==3.5) is used for tokenized sentences.
 
 ## Usage
 ### Positional & Optional Parameters
-* **data**: Data dir path, e.g. 'iris', 'zoo' or 'glass'.
-* **algorithm**: Four algorithms to choose from: KNN, KDE, KMEANS, GMM.
-* **-k**: Number of clusters in K_means and GMM. Or number of neighbors in KNN. (Default: 3).
-* **-r**: Ratio of dataset for validation. (0.0~1.0) (Default: 0.2).
-* **-o, --optimized**: If set true, cluster number will instead be optimized in K-means and GMM. (Default: False.).
+* **data**: Data filename, e.g. 'alllines.txt'.
+* **-t**: Task to perform. 0 for word prediction, and 1 for text generation. (Default: -1).
+* **-n**: Number of hidden states. (Default: 10).
+* **-f**: If None, model will be trained from scratch. Otherwisse, model parameters are loaded using this filename. (Default: ''.).
 
 ### Example
 ```bash
-python main.py glass KMEANS -k 7 -o False
+python main.py alllines.txt -t 1 -n 10
 ```
-* Apply K_means algorithm to 'glass' dataset.
-* Number of clusters manually set at 7.
-
-### Running Display
-Results will be shown successively as follows:
-* Histograms, scattered matrix between features and box plots.
-* My algorithm results (including visualization).
-* Results (including some visualization) for comparison from scikit-learn.
-* In optimized KMeans and GMM, a graph of K with criterion will be given. A command input has to be given judged on 'elbow method'.
-
-## Study 1: Zoo Dataset
-### Histogram
-* Histograms are basic represenations of data frequency in bins of values.
-
-![](https://github.com/liuzey/EECS738/blob/main/saved_fig/Zoo_hist.png)
-
-### KNN
+* Number of hidden state is ten.
+* Model is trained from scratch.
+* Perform text generation.
 ```bash
-python main.py zoo KNN -k 3
+python main.py alllines.txt -t 0 -n 10 -f 'saved_paras.npy'
 ```
-* A data point is labelled by voting of K nearest neighbors in distance.
-* Euclidean metrics are used.
-* A quick glance at distribution:
+* Number of hidden state is ten.
+* Model parameters are loaded from './data/saved_paras.npy'.
+* Perform word prediction.
 
-![](https://github.com/liuzey/EECS738/blob/main/saved_fig/Zoo_KNN.png)
-* Accuracy when K=3: 19/21=90.48%.
-* Results using scikit-learn when K=3: 19/21=90.48%.
+## Results
+### Text Generation
+### Word Prediction
 
-### Kernel Density Estimation
-```bash
-python main.py zoo KDE
-```
-* Fit each data point with a family of kernel functions. Stack functions together to represent the whole dataset.
-* Guassian kernels are used.
-
-![](https://github.com/liuzey/EECS738/blob/main/saved_fig/Zoo_KDE_my.png)
-* Results using scikit-learn are the same. [here](https://github.com/liuzey/EECS738/blob/main/saved_fig/Zoo_KDE_skl.png)
-
-### K-means Clustering
-* Assign each data point to the nearest cluster center. Centers are updated as average of data points in each cluster.
-* Errors are calculated as the sum of Euclidean distances.
-* The best results are chosen among ten different randomly-initialized setting.
-* Best errors: 212.81
-* Best errors by scikit-learn: 519.97
-* When **--optimized=False**, K (number of clusters) is set at total number of labels mannually.
-
-```bash
-python main.py zoo KMEANS -k 7
-```
-* When **--optimized=True**, K is optimized across [1,9]. Elbow method is used to determine the best K.
-* We can judge the elbow at 5-6.
-
-```bash
-python main.py zoo KMEANS -o 1
-```
-![](https://github.com/liuzey/EECS738/blob/main/saved_fig/Zoo_KMEANS_elbow.png)
-![](https://github.com/liuzey/EECS738/blob/main/saved_fig/Zoo_KMEANS_my.png)
-* Results using scikit-learn can be find [here](https://github.com/liuzey/EECS738/blob/main/saved_fig/Zoo_KMEANS_skl.png).
-
-### Gaussian Mixture Model
-* Several Gaussian distribution are used to represent the dataset. Each datapoint is assigned to the 'nearest distribution' based on posterior probability. Parameters of the distributions are updated based on Expectation-Maximization(EM). Thus, data points following different distributions are clustered.
-* The best results are chosen among three different randomly-initialized setting.
-* Best log-likelihood: 35.26
-* Best log-likelihood by scikit-learn (lower bounds): 43.95 
-* When **--optimized=False**, K (number of clusters) is set at total number of labels mannually.
-
-```bash
-python main.py zoo GMM -k 7
-```
-* When **--optimized=True**, K is optimized across [2,10]. Bayesian Information Criterion(BIC) is used to model performance and cost. Elbow method is used to determine the best K.
-* We can judge the elbow at 7.
-
-```bash
-python main.py zoo GMM -o 1
-```
-![](https://github.com/liuzey/EECS738/blob/main/saved_fig/Zoo_GMM_bic.png)
-![](https://github.com/liuzey/EECS738/blob/main/saved_fig/Zoo_GMM_my.png)
-* Results using scikit-learn can be find [here](https://github.com/liuzey/EECS738/blob/main/saved_fig/Zoo_GMM_skl.png).
-
-## Study 2: Glass Dataset
-Settings aligns with Zoo Dataset.
-### Histogram
-![](https://github.com/liuzey/EECS738/blob/main/saved_fig/Glass_hist.png)
-
-### KNN
-* A quick glance at distribution:
-
-![](https://github.com/liuzey/EECS738/blob/main/saved_fig/Glass_KNN.png)
-* Accuracy when K=3: 24/43=55.81%, K=8: 29/43=67.44%.
-* Results using scikit-learn when K=3: 26/43=60.47%, K=8: 29/43=67.44%.
-
-### Kernel Density Estimation
-![](https://github.com/liuzey/EECS738/blob/main/saved_fig/Glass_KDE_my.png)
-* Results using scikit-learn are the same. [here](https://github.com/liuzey/EECS738/blob/main/saved_fig/Glass_KDE_skl.png)
-
-### K-means Clustering
-* Best errors: 310.30
-* Best errors by scikit-learn: 679.19
-* We can judge the elbow at 6-7.
-
-
-
-![](https://github.com/liuzey/EECS738/blob/main/saved_fig/Glass_KMEANS_elbow.png)
-![](https://github.com/liuzey/EECS738/blob/main/saved_fig/Glass_KMEANS_my.png)
-* Results using scikit-learn can be find [here](https://github.com/liuzey/EECS738/blob/main/saved_fig/Glass_KMEANS_skl.png).
-
-### Gaussian Mixture Model
-* Best log-likelihood: 2.30
-* Best log-likelihood by scikit-learn (lower bounds): 0.39 
-* We can judge the elbow at 7.
-
-
-
-![](https://github.com/liuzey/EECS738/blob/main/saved_fig/Glass_GMM_bic.png)
-![](https://github.com/liuzey/EECS738/blob/main/saved_fig/Glass_GMM_my.png)
-* Results using scikit-learn can be find [here](https://github.com/liuzey/EECS738/blob/main/saved_fig/Glass_GMM_skl.png).
 
 ## Notes
-* There are multiple features in each dataset. Thus, cluster graphs of every feature pair are not shown. Instead, clustering of every feature is shown.
-* KNN doesn't behave well for Glass Dataset. Reasons may be that the dataset is unbalanced.
-* Performance of KNN improves with K to avoid overfitting noises.
-* Optimized KMeans or GMM can be very time-consuming. [Here](https://github.com/liuzey/EECS738/blob/main/algorithms/gmm.py#L18) and [here](https://github.com/liuzey/EECS738/blob/main/algorithms/kmeans.py#L15) for modify settings. [Here](https://github.com/liuzey/EECS738/tree/main/saved_logs) for a quick view of training records.
-* There are some other problems, e.g. KMeans errors deviates from scikit-learn results, or BIC not strictly descending. This may be due to implementation flaws or inappropriate parameters.
+* The training process can be very time-consuming. Only the first 20,000 words are used for training. If change is needed in this setting， please refer to here[https://github.com/liuzey/EECS738_Project2/blob/af0c252da06b6a10647e082f06b02b121b6abdfc/main.py#L38]
+* Overall, the performance of HMM over Shakespeare plays is not satisfying. This can be due to both embedding strategies and model structrue, e.g. LSTM.
 
 
 ## Schedule
-- [x] Set up a new git repository in your GitHub account.
-- [x] Pick two datasets from (https://www.kaggle.com/uciml/datasets).
+- [x] Set up a new git repository in your GitHub account
+- [x] Pick a text corpus dataset such as https://www.kaggle.com/kingburrito666/shakespeare-plays or from https://github.com/niderhoff/nlp-datasets.
 - [x] Choose a programming language (Python, C/C++, Java). **Python**
 - [x] Formulate ideas on how machine learning can be used to model distributions within the dataset.
-- [x] Build a heuristic and/or algorithm to model the data using mixture models of probability distributions programmatically.
+- [x] Build a Hidden Markov Model to be able to programmatically: 1.Generate new text from the text corpus. 2.Perform text prediction given a sequence of words.
 - [x] Document your process and results.
 - [x] Commit your source code, documentation and other supporting files to the git repository in GitHub.
 
 ## Reference
-* Histogram - Wikipedia. https://en.wikipedia.org/wiki/Histogram
-* GaussianMixture - scikit-learn. https://scikit-learn.org/stable/modules/generated/sklearn.mixture.GaussianMixture.html
-* KMeans - scikit-learn. https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html
-* KernelDensity - scikit-learn. https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KernelDensity.html
-* Scikit-learn - Github. https://github.com/scikit-learn/scikit-learn/blob/a95203b/sklearn/mixture/gmm.py
-* https://medium.com/@analyttica/what-is-bayesian-information-criterion-bic-b3396a894be6
-* https://machinelearningmastery.com/machine-learning-in-python-step-by-step/
-* Matplotlib APIs. https://matplotlib.org/3.1.1/api/index.html
-* Pandas APIs. https://pandas.pydata.org/pandas-docs/stable/reference/frame.html
+* Baum–Welch algorithm - Wikipedia. https://en.wikipedia.org/wiki/Baum%E2%80%93Welch_algorithm
+* Hidden Markov Models - scikit-learn. https://ogrisel.github.io/scikit-learn.org/sklearn-tutorial/modules/generated/sklearn.hmm.GaussianHMM.html
+* hmmlearn - Github. https://github.com/hmmlearn/hmmlearn
+* https://towardsdatascience.com/hidden-markov-model-implemented-from-scratch-72865bda430e
+* https://www.fing.edu.uy/~alopeza/biohpc/papers/hmm/Eddy-What-is-a-HMM-ATG4-preprint.pdf
+* nltk.tokenize package - NLTK 3.5 documentation. https://www.nltk.org/api/nltk.tokenize.html
+* Random sampling - Numpy Api Reference. https://numpy.org/doc/stable/reference/random/
 
