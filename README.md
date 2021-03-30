@@ -52,7 +52,7 @@ python main.py alllines.txt -t 0 -n 10 -f 'saved_paras.npy'
 
 
 ## Notes
-* The training process can be very time-consuming. Only the first 20,000 words are used for training. If change is needed in this setting， please refer to [here](https://github.com/liuzey/EECS738_Project2/blob/af0c252da06b6a10647e082f06b02b121b6abdfc/main.py#L38)
+* The training process can be very time-consuming. Only the first 6,000 words are used for training. As the text data increases, it both increase the batches to iterate and the size of dictionary, i.e. one dimension of emission matrix, which will exponentially increase time complexity. If change is needed in this setting， please refer to [here](https://github.com/liuzey/EECS738_Project2/blob/af0c252da06b6a10647e082f06b02b121b6abdfc/main.py#L38)
 * Overall, the performance of HMM over Shakespeare plays is not satisfying. This can be due to both embedding strategies and model structrue, e.g. LSTM.
 
 
